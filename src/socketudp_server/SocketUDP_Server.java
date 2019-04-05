@@ -29,7 +29,6 @@ public class SocketUDP_Server {
             System.out.print("Servidor iniciado\n");
             //Creacion de buffer con cantidad maxima de memoria
             byte[] buffer = new byte[1024];
-
             int[] Clave = {1, 2, 4, 8, 16, 32, 64};
             int[] numero = new int[7];
 
@@ -47,39 +46,39 @@ public class SocketUDP_Server {
 
                 //conversion del paquete Datagram a String 
                 String cadena = new String(peticion.getData(), 0, peticion.getLength());
-                 //   Conversion de cadena a Array separado por comas
-                //String numString[] = cadena.split("");
+
+                
                 int bite = Integer.parseInt(cadena);
                 numero[contador - 1] = bite;
-                contador++;                
+                contador++;
 
-            //impresion del mensaje
+                //impresion del mensaje
                 System.out.println("IP: " + peticion.getAddress());
                 System.out.println("Puerto: " + peticion.getPort());
                 //La data llega en formato byte es necesario convertila a String
                 System.out.println("Mensaje: " + cadena);
-                
 
                 for (int i = 0; i < numero.length; i++) {
-                    System.out.print(numero[i]);
+                    System.out.print(numero[i]);               
+                          
                 }
-                
-                if(contador==8){
-                     for(int i=0; i<numero.length; i++){
-                	numPensado+=numero[i]*Clave[i];
-                }
-                
-                System.out.println("\nNumero pensado " + numPensado);
-                //
-                    String enviar = Integer.toString(numPensado);
-                    buffer = enviar.getBytes();
-                    DatagramPacket respuesta = new DatagramPacket(buffer, buffer.length, peticion.getAddress(), peticion.getPort()); 
-                    
-                }
-               
-                
 
-                
+                if (contador == 8) {
+                    for (int i = 0; i < numero.length; i++) {
+                        numPensado += numero[i] * Clave[i];
+                    }
+
+                    System.out.println("\nNumero pensado " + numPensado);
+                    
+                    String enviar = Integer.toString(numPensado);
+                    byte[] respuesta = enviar.getBytes();
+                    DatagramPacket miPaquete = new DatagramPacket(respuesta, enviar.length(), peticion.getAddress(), peticion.getPort());
+                    miSocket.send(miPaquete); 
+                    miSocket.close();
+                    main(args);
+                           
+                }
+
             }
         } catch (SocketException ex) {
             Logger.getLogger(SocketUDP_Server.class.getName()).log(Level.SEVERE, null, ex);
